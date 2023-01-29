@@ -22,7 +22,6 @@ public class ShellerParser {
     private static List<String> classesMap = new ArrayList<>();
     private static Map<String, Sheller> shellerMap = new HashMap<>();
 
-
     /**
      * 加固应用包含的包名，如果无法脱壳，请将application的包名，加到相应数组
      */
@@ -63,7 +62,7 @@ public class ShellerParser {
     }
 
     public static void log(String txt) {
-        CoreUtils.logRelease("packer-> " + txt);
+        CoreUtils.logPrint("packer-> " + txt);
     }
 
     public static Sheller parser(final XC_LoadPackage.LoadPackageParam lpparam) {
