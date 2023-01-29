@@ -1,7 +1,9 @@
-package com.wrbug.dumpdex;
+package com.cqingwang.dumpdex;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.wrbug.dumpdex.R;
 
 public class MainActivity extends AppCompatActivity {
     @Override

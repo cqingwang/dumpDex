@@ -7,7 +7,7 @@
 #define TAG "dumpDex->"
 
 
-JNIEXPORT void JNICALL Java_com_wrbug_dumpdex_Native_dump
+extern "C" JNIEXPORT void JNICALL Java_com_cqingwang_dumpdex_DexDumper_native_1dump
         (JNIEnv *env, jclass obj, jstring packageName) {
 
     static bool is_hook = false;

@@ -33,7 +33,7 @@ extern "C" {
  * Method:    test
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_com_wrbug_dumpdex_Native_dump
+JNIEXPORT void JNICALL Java_com_wrbug_dumpdex_NativeDump_dump
         (JNIEnv *, jclass, jstring);
 
 

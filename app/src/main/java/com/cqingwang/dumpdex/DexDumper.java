@@ -1,44 +1,50 @@
-package com.wrbug.dumpdex.dump;
+package com.cqingwang.dumpdex;
 
 import android.app.Application;
 import android.content.Context;
 
-import com.wrbug.dumpdex.util.DeviceUtils;
-import com.wrbug.dumpdex.util.FileUtils;
-import com.wrbug.dumpdex.Native;
-import com.wrbug.dumpdex.PackerInfo;
-
 import java.io.File;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-/**
- * LowSdkDump
- *
- * @author WrBug
- * @since 2018/3/23
- */
-public class LowSdkDump {
-    public static void log(String txt) {
+public class DexDumper {
 
-        XposedBridge.log("dumpdex.LowSdkDump-> " + txt);
+    private static boolean loaded = false;
+
+    private static void native_init() {
+        if (!loaded) {
+            loaded = true;
+            String path = "/data/local/tmp/";
+            try {
+                CoreUtils.load(path, "libnativeDump.so");
+            } catch (Throwable t) {
+                CoreUtils.load(path, "libnativeDump64.so");
+            }
+//        System.loadLibrary("nativeDump");
+        }
     }
 
-    public static void init(final XC_LoadPackage.LoadPackageParam lpparam, PackerInfo.Type type) {
-        log("start hook Instrumentation#newApplication");
-        if (DeviceUtils.supportNativeHook()) {
-            Native.dump(lpparam.packageName);
-        }
-        if (type == PackerInfo.Type.BAI_DU) {
-            return;
-        }
+    public static void native_parser(String packageName) {
+        native_init();
+        native_dump(packageName);
+    }
+
+    private static native void native_dump(String packageName);
+
+
+    public static void logPrint(String txt) {
+        CoreUtils.logRelease("lowSDK: " + txt);
+    }
+
+    public static void java_parser(final XC_LoadPackage.LoadPackageParam lpparam) {
+        logPrint("start hook [Instrumentation.newApplication]");
+
         XposedHelpers.findAndHookMethod("android.app.Instrumentation", lpparam.classLoader, "newApplication", ClassLoader.class, String.class, Context.class, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                log("Application=" + param.getResult());
+            protected void afterHookedMethod(MethodHookParam param) {
+                logPrint("Application=" + param.getResult());
                 dump(lpparam.packageName, param.getResult().getClass());
                 attachBaseContextHook(lpparam, ((Application) param.getResult()));
             }
@@ -47,16 +53,16 @@ public class LowSdkDump {
 
     private static void dump(String packageName, Class<?> aClass) {
         Object dexCache = XposedHelpers.getObjectField(aClass, "dexCache");
-        log("decCache=" + dexCache);
+        logPrint("decCache=" + dexCache);
         Object o = XposedHelpers.callMethod(dexCache, "getDex");
         byte[] bytes = (byte[]) XposedHelpers.callMethod(o, "getBytes");
         String path = "/data/data/" + packageName + "/dump";
         File file = new File(path, "source-" + bytes.length + ".dex");
         if (file.exists()) {
-            log(file.getName() + " exists");
+            logPrint(file.getName() + " exists");
             return;
         }
-        FileUtils.writeByteToFile(bytes, file.getAbsolutePath());
+        CoreUtils.writeByteToFile(bytes, file.getAbsolutePath());
     }
 
 
@@ -65,7 +71,7 @@ public class LowSdkDump {
         XposedHelpers.findAndHookMethod(ClassLoader.class, "loadClass", String.class, boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                log("loadClass->" + param.args[0]);
+                logPrint("loadClass->" + param.args[0]);
                 Class result = (Class) param.getResult();
                 if (result != null) {
                     dump(lpparam.packageName, result);
@@ -75,7 +81,7 @@ public class LowSdkDump {
         XposedHelpers.findAndHookMethod("java.lang.ClassLoader", classLoader, "loadClass", String.class, boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                log("loadClassWithclassLoader->" + param.args[0]);
+                logPrint("loadClassWithclassLoader->" + param.args[0]);
                 Class result = (Class) param.getResult();
                 if (result != null) {
                     dump(lpparam.packageName, result);
