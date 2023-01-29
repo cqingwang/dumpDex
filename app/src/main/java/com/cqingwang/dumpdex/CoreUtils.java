@@ -22,7 +22,7 @@ public class CoreUtils {
         CoreUtils.logRelease("loaded: " + path);
     }
 
-    public static void writeByteToFile(byte[] data, String path) {
+    public static void bytesToFile(byte[] data, String path) {
         try {
             FileOutputStream localFileOutputStream = new FileOutputStream(path);
             localFileOutputStream.write(data);

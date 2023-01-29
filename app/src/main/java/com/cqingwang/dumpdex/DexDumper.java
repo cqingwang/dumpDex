@@ -62,7 +62,7 @@ public class DexDumper {
             logPrint(file.getName() + " exists");
             return;
         }
-        CoreUtils.writeByteToFile(bytes, file.getAbsolutePath());
+        CoreUtils.bytesToFile(bytes, file.getAbsolutePath());
     }
 
 
