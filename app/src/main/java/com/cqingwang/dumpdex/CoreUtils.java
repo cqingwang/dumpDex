@@ -12,30 +12,8 @@ import de.robv.android.xposed.XposedBridge;
  */
 public class CoreUtils {
 
-    private static int sdkInit = Build.VERSION.SDK_INT;
-
     public static boolean isNativeHook() {
-        return isAndroid6() || isAndroid7() || isAndroid8() || isAndroid9() || isAndroid10();
-    }
-
-    public static boolean isAndroid6() {
-        return sdkInit == 23;
-    }
-
-    public static boolean isAndroid7() {
-        return CoreUtils.includes(sdkInit, new int[]{24, 25});
-    }
-
-    public static boolean isAndroid8() {
-        return CoreUtils.includes(sdkInit, new int[]{26, 27});
-    }
-
-    public static boolean isAndroid9() {
-        return sdkInit == 28;
-    }
-
-    public static boolean isAndroid10() {
-        return sdkInit == 29;
+        return Build.VERSION.SDK_INT >= 23; //23=android 6.0
     }
 
     public static void load(String parent, String soName) {
