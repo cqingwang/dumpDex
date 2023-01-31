@@ -4,7 +4,6 @@ import android.os.Build;
 
 import com.wrbug.dumpdex.dump.LowSdkDump;
 import com.wrbug.dumpdex.dump.OreoDump;
-import com.wrbug.dumpdex.util.DeviceUtils;
 
 import java.io.File;
 
@@ -27,9 +26,6 @@ public class XposedInit implements IXposedHookLoadPackage {
     }
 
     public static void log(Throwable t) {
-        if (!BuildConfig.DEBUG) {
-            return;
-        }
         XposedBridge.log(t);
     }
 
@@ -47,12 +43,16 @@ public class XposedInit implements IXposedHookLoadPackage {
                 parent.mkdirs();
             }
             log("sdk version:" + Build.VERSION.SDK_INT);
-            if (DeviceUtils.isOreo() || DeviceUtils.isPie() || DeviceUtils.isAndroid10()) {
+            if (supportNativeHook()) {
                 OreoDump.init(lpparam);
             } else {
-                LowSdkDump.init(lpparam,type);
+                LowSdkDump.init(lpparam, type);
             }
 
         }
+    }
+
+    public static boolean supportNativeHook() {
+        return Build.VERSION.SDK_INT > 23;
     }
 }

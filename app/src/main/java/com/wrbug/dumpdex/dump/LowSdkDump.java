@@ -3,7 +3,7 @@ package com.wrbug.dumpdex.dump;
 import android.app.Application;
 import android.content.Context;
 
-import com.wrbug.dumpdex.util.DeviceUtils;
+import com.wrbug.dumpdex.XposedInit;
 import com.wrbug.dumpdex.util.FileUtils;
 import com.wrbug.dumpdex.Native;
 import com.wrbug.dumpdex.PackerInfo;
@@ -29,10 +29,8 @@ public class LowSdkDump {
 
     public static void init(final XC_LoadPackage.LoadPackageParam lpparam, PackerInfo.Type type) {
         log("start hook Instrumentation#newApplication");
-        if (DeviceUtils.supportNativeHook()) {
+        if (XposedInit.supportNativeHook()) {
             Native.dump(lpparam.packageName);
-        }
-        if (type == PackerInfo.Type.BAI_DU) {
             return;
         }
         XposedHelpers.findAndHookMethod("android.app.Instrumentation", lpparam.classLoader, "newApplication", ClassLoader.class, String.class, Context.class, new XC_MethodHook() {
