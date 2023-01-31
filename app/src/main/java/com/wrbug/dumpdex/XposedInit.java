@@ -42,7 +42,7 @@ public class XposedInit implements IXposedHookLoadPackage {
             if (!parent.exists() || !parent.isDirectory()) {
                 parent.mkdirs();
             }
-            log("sdk version:" + Build.VERSION.SDK_INT);
+            log("sdk version:" + Build.VERSION.SDK_INT+",native:"+supportNativeHook());
             if (supportNativeHook()) {
                 OreoDump.init(lpparam);
             } else {

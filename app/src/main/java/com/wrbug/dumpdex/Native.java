@@ -14,11 +14,12 @@ public class Native {
     }
     static {
         try {
-            System.load("/data/local/tmp/libnativeDump.so");
             log("loaded libnativeDump.so");
+            System.load("/data/local/tmp/libnativeDump.so");
         } catch (Throwable t) {
-            System.load("/data/local/tmp/libnativeDump64.so");
+            log("failed:"+t.getMessage());
             log("loaded libnativeDump64.so");
+            System.load("/data/local/tmp/libnativeDump64.so");
         }
 //        System.loadLibrary("nativeDump");
     }
